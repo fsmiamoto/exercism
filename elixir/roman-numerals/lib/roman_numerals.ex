@@ -27,9 +27,7 @@ defmodule RomanNumerals do
     result
   end
 
-  defp add_roman_numerals(result, number, conversion_list) do
-    [{arabic, roman} | other_numerals] = conversion_list
-
+  defp add_roman_numerals(result, number, [{arabic, roman} | other_numerals]) do
     should_repeat_count = div(number, arabic)
 
     add_roman_numerals(
