@@ -1,0 +1,102 @@
+defmodule RobotSimulator do
+  @directions [:north, :east, :south, :west]
+
+  @doc """
+  Create a Robot Simulator given an initial direction and position.
+
+  Valid directions are: `:north`, `:east`, `:south`, `:west`
+  """
+  @spec create(direction :: atom, position :: {integer, integer}) :: any
+  def create(direction \\ :north, position \\ {0, 0})
+
+  def create(direction, {x, y}) when is_integer(x) and is_integer(y) do
+    if valid_direction?(direction) do
+      %{:position => {x, y}, :direction => direction}
+    else
+      {:error, "invalid direction"}
+    end
+  end
+
+  def create(_, _) do
+    {:error, "invalid position"}
+  end
+
+  @doc """
+  Simulate the robot's movement given a string of instructions.
+
+  Valid instructions are: "R" (turn right), "L", (turn left), and "A" (advance)
+  """
+  @spec simulate(robot :: any, instructions :: String.t()) :: any
+  def simulate(robot, instructions) do
+    instructions
+    |> String.to_charlist()
+    |> Enum.chunk_every(1)
+    |> Enum.reduce(robot, fn instruction, robot -> run_instruction(robot, instruction) end)
+  end
+
+  @doc """
+  Return the robot's direction.
+
+  Valid directions are: `:north`, `:east`, `:south`, `:west`
+  """
+  @spec direction(robot :: any) :: atom
+  def direction(robot) do
+    robot.direction
+  end
+
+  @doc """
+  Return the robot's position.
+  """
+  @spec position(robot :: any) :: {integer, integer}
+  def position(robot) do
+    robot.position
+  end
+
+  defp run_instruction(robot, instruction) do
+    new_direction = change_direction(robot.direction, instruction)
+    create(new_direction, move(new_direction, robot.position))
+  end
+
+  defp move(dir, {x, y}) do
+    case dir do
+      :west -> {x - 1, y}
+      :east -> {x + 1, y}
+      :north -> {x, y + 1}
+      :south -> {x, y - 1}
+      _ -> {x, y}
+    end
+  end
+
+  defp change_direction(direction, 'L') do
+    index = Enum.find_index(@directions, fn dir -> dir === direction end)
+    Enum.at(@directions, index - 1)
+  end
+
+  defp change_direction(direction, 'R') do
+    index = Enum.find_index(@directions, fn dir -> dir === direction end)
+    Enum.at(@directions, index + 1)
+  end
+
+  defp change_direction(direction, 'A') do
+    direction
+  end
+
+  defp valid_direction?(direction) do
+    case direction do
+      :north -> true
+      :south -> true
+      :west -> true
+      :east -> true
+      _ -> false
+    end
+  end
+
+  defp valid_instruction?(instruction) do
+    case instruction do
+      "R" -> true
+      "L" -> true
+      "A" -> true
+      _ -> false
+    end
+  end
+end
