@@ -53,8 +53,11 @@ defmodule RobotSimulator do
   end
 
   defp run_instruction(robot, instruction) do
-    new_direction = change_direction(robot.direction, instruction)
-    create(new_direction, move(new_direction, robot.position))
+    case instruction do
+      'L' -> create(change_direction(robot.direction, instruction), robot.position)
+      'R' -> create(change_direction(robot.direction, instruction), robot.position)
+      'A' -> create(robot.direction, move(robot.direction, robot.position))
+    end
   end
 
   defp move(dir, {x, y}) do
@@ -63,22 +66,25 @@ defmodule RobotSimulator do
       :east -> {x + 1, y}
       :north -> {x, y + 1}
       :south -> {x, y - 1}
-      _ -> {x, y}
     end
   end
 
-  defp change_direction(direction, 'L') do
-    index = Enum.find_index(@directions, fn dir -> dir === direction end)
-    Enum.at(@directions, index - 1)
+  defp change_direction(dir, 'L') do
+    case dir do
+      :west -> :south
+      :north -> :west
+      :east -> :north
+      :south -> :east
+    end
   end
 
-  defp change_direction(direction, 'R') do
-    index = Enum.find_index(@directions, fn dir -> dir === direction end)
-    Enum.at(@directions, index + 1)
-  end
-
-  defp change_direction(direction, 'A') do
-    direction
+  defp change_direction(dir, 'R') do
+    case dir do
+      :west -> :north
+      :north -> :east
+      :east -> :south
+      :south -> :west
+    end
   end
 
   defp valid_direction?(direction) do
@@ -87,15 +93,6 @@ defmodule RobotSimulator do
       :south -> true
       :west -> true
       :east -> true
-      _ -> false
-    end
-  end
-
-  defp valid_instruction?(instruction) do
-    case instruction do
-      "R" -> true
-      "L" -> true
-      "A" -> true
       _ -> false
     end
   end
