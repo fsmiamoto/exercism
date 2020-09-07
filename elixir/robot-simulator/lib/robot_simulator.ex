@@ -1,6 +1,4 @@
 defmodule RobotSimulator do
-  @directions [:north, :east, :south, :west]
-
   @doc """
   Create a Robot Simulator given an initial direction and position.
 
@@ -31,7 +29,27 @@ defmodule RobotSimulator do
     instructions
     |> String.to_charlist()
     |> Enum.chunk_every(1)
-    |> Enum.reduce(robot, fn instruction, robot -> run_instruction(robot, instruction) end)
+    |> Enum.reduce(robot, &reducer(&1, &2))
+  end
+
+  defp reducer(_dir, {:error, _}) do
+    {:error, "invalid instruction"}
+  end
+
+  defp reducer('L', robot) do
+    run_instruction(robot, 'L')
+  end
+
+  defp reducer('R', robot) do
+    run_instruction(robot, 'R')
+  end
+
+  defp reducer('A', robot) do
+    run_instruction(robot, 'A')
+  end
+
+  defp reducer(_dir, _robot) do
+    {:error, "invalid instruction"}
   end
 
   @doc """
