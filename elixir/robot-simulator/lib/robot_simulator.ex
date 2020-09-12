@@ -1,4 +1,9 @@
 defmodule RobotSimulator do
+  @valid_directions [:north, :east, :south, :west]
+
+  defguard is_valid_direction(dir) when dir in @valid_directions
+  defguard is_valid_position(x, y) when is_integer(x) and is_integer(y)
+
   @doc """
   Create a Robot Simulator given an initial direction and position.
 
@@ -7,15 +12,16 @@ defmodule RobotSimulator do
   @spec create(direction :: atom, position :: {integer, integer}) :: any
   def create(direction \\ :north, position \\ {0, 0})
 
-  def create(direction, {x, y}) when is_integer(x) and is_integer(y) do
-    if valid_direction?(direction) do
-      %{:position => {x, y}, :direction => direction}
-    else
-      {:error, "invalid direction"}
-    end
+  def create(dir, {x, y} = pos)
+      when is_valid_direction(dir) and is_valid_position(x, y) do
+    %{:position => pos, :direction => dir}
   end
 
-  def create(_, _) do
+  def create(dir, _pos) when not is_valid_direction(dir) do
+    {:error, "invalid direction"}
+  end
+
+  def create(_dir, _pos) do
     {:error, "invalid position"}
   end
 
@@ -93,16 +99,6 @@ defmodule RobotSimulator do
       :north -> :east
       :east -> :south
       :south -> :west
-    end
-  end
-
-  defp valid_direction?(direction) do
-    case direction do
-      :north -> true
-      :south -> true
-      :west -> true
-      :east -> true
-      _ -> false
     end
   end
 end
