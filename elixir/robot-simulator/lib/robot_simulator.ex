@@ -25,30 +25,29 @@ defmodule RobotSimulator do
   Valid instructions are: "R" (turn right), "L", (turn left), and "A" (advance)
   """
   @spec simulate(robot :: any, instructions :: String.t()) :: any
-  def simulate(robot, instructions) do
-    instructions
-    |> String.to_charlist()
-    |> Enum.chunk_every(1)
-    |> Enum.reduce(robot, &reducer(&1, &2))
+  def simulate(robot, instructions),
+    do: run_instructions(robot, instructions)
+
+  defp run_instructions(%{direction: direction} = robot, "L" <> instructions) do
+    %{robot | direction: change_direction(direction, 'L')}
+    |> run_instructions(instructions)
   end
 
-  defp reducer(_dir, {:error, _}) do
-    {:error, "invalid instruction"}
+  defp run_instructions(%{direction: direction} = robot, "R" <> instructions) do
+    %{robot | direction: change_direction(direction, 'R')}
+    |> run_instructions(instructions)
   end
 
-  defp reducer('L', robot) do
-    run_instruction(robot, 'L')
+  defp run_instructions(%{position: position, direction: direction} = robot, "A" <> instructions) do
+    %{robot | position: move(direction, position)}
+    |> run_instructions(instructions)
   end
 
-  defp reducer('R', robot) do
-    run_instruction(robot, 'R')
+  defp run_instructions(robot, "") do
+    robot
   end
 
-  defp reducer('A', robot) do
-    run_instruction(robot, 'A')
-  end
-
-  defp reducer(_dir, _robot) do
+  defp run_instructions(_robot, _instructions) do
     {:error, "invalid instruction"}
   end
 
@@ -68,14 +67,6 @@ defmodule RobotSimulator do
   @spec position(robot :: any) :: {integer, integer}
   def position(robot) do
     robot.position
-  end
-
-  defp run_instruction(robot, instruction) do
-    case instruction do
-      'L' -> create(change_direction(robot.direction, instruction), robot.position)
-      'R' -> create(change_direction(robot.direction, instruction), robot.position)
-      'A' -> create(robot.direction, move(robot.direction, robot.position))
-    end
   end
 
   defp move(dir, {x, y}) do
