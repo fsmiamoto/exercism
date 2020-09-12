@@ -35,12 +35,12 @@ defmodule RobotSimulator do
     do: run_instructions(robot, instructions)
 
   defp run_instructions(%{direction: direction} = robot, "L" <> instructions) do
-    %{robot | direction: change_direction(direction, 'L')}
+    %{robot | direction: turn(direction, "L")}
     |> run_instructions(instructions)
   end
 
   defp run_instructions(%{direction: direction} = robot, "R" <> instructions) do
-    %{robot | direction: change_direction(direction, 'R')}
+    %{robot | direction: turn(direction, "R")}
     |> run_instructions(instructions)
   end
 
@@ -84,8 +84,8 @@ defmodule RobotSimulator do
     end
   end
 
-  defp change_direction(dir, 'L') do
-    case dir do
+  defp turn(direction, "L") do
+    case direction do
       :west -> :south
       :north -> :west
       :east -> :north
@@ -93,8 +93,8 @@ defmodule RobotSimulator do
     end
   end
 
-  defp change_direction(dir, 'R') do
-    case dir do
+  defp turn(direction, "R") do
+    case direction do
       :west -> :north
       :north -> :east
       :east -> :south
