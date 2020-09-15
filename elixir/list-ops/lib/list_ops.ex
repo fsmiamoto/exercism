@@ -7,60 +7,30 @@ defmodule ListOps do
 
   @spec count(list) :: non_neg_integer
   def count(l) do
-    l |> count_iter(0)
-  end
-
-  defp count_iter([_ | tail], count) do
-    tail |> count_iter(count + 1)
-  end
-
-  defp count_iter([], count) do
-    count
+    l |> reduce(0, fn _, acc -> acc + 1 end)
   end
 
   @spec reverse(list) :: list
   def reverse(l) do
-    l |> reverse_iter([])
-  end
-
-  defp reverse_iter([head | tail], acc) do
-    tail |> reverse_iter([head | acc])
-  end
-
-  defp reverse_iter([], acc) do
-    acc
+    l |> reduce([], fn item, acc -> [item | acc] end)
   end
 
   @spec map(list, (any -> any)) :: list
   def map(l, f) do
-    l |> map_iter([], f) |> reverse
-  end
-
-  defp map_iter([head | tail], acc, f) do
-    tail |> map_iter([f.(head) | acc], f)
-  end
-
-  defp map_iter([], acc, _) do
-    acc
+    l |> reduce([], fn item, acc -> [f.(item) | acc] end) |> reverse
   end
 
   @spec filter(list, (any -> as_boolean(term))) :: list
   def filter(l, f) do
-    l |> filter_iter([], f) |> reverse
+    l |> reduce([], &filter_item(&1, &2, f)) |> reverse
   end
 
-  defp filter_iter([head | tail], acc, f) do
-    should_keep = f.(head)
-
-    if should_keep do
-      tail |> filter_iter([head | acc], f)
+  defp filter_item(item, acc, f) do
+    if f.(item) do
+      [item | acc]
     else
-      tail |> filter_iter(acc, f)
+      acc
     end
-  end
-
-  defp filter_iter([], acc, _) do
-    acc
   end
 
   @type acc :: any
@@ -79,19 +49,12 @@ defmodule ListOps do
 
   @spec append(list, list) :: list
   def append(a, b) do
-    a |> reverse |> append_iter(b) |> reverse
-  end
-
-  defp append_iter(a, [head | tail]) do
-    append_iter([head | a], tail)
-  end
-
-  defp append_iter(a, []) do
-    a
+    a |> reverse |> reduce(b, &[&1 | &2])
   end
 
   @spec concat([[any]]) :: [any]
   def concat(ll) do
-    reduce(ll, [], fn l, acc -> append(acc, l) end)
+    f = &[&1 | &2]
+    ll |> reduce([], &reduce(&1, &2, f)) |> reverse
   end
 end
