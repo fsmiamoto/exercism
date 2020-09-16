@@ -33,12 +33,18 @@ defmodule Markdown do
   end
 
   defp parse_list_md_level(l) do
-    t = String.split(String.trim_leading(l, "* "))
-    "<li>" <> join_words_with_tags(t) <> "</li>"
+    l
+    |> String.trim_leading("* ")
+    |> String.split()
+    |> enclose_with_li_tag
+  end
+
+  defp enclose_with_li_tag(t) do
+    "<li>#{join_words_with_tags(t)}</li>"
   end
 
   defp enclose_with_header_tag({hl, htl}) do
-    "<h" <> hl <> ">" <> htl <> "</h" <> hl <> ">"
+    "<h#{hl}>#{htl}</h#{hl}>"
   end
 
   defp enclose_with_paragraph_tag(t) do
@@ -46,11 +52,15 @@ defmodule Markdown do
   end
 
   defp join_words_with_tags(t) do
-    Enum.join(Enum.map(t, fn w -> replace_md_with_tag(w) end), " ")
+    t
+    |> Enum.map(&replace_md_with_tag(&1))
+    |> Enum.join(" ")
   end
 
   defp replace_md_with_tag(w) do
-    replace_suffix_md(replace_prefix_md(w))
+    w
+    |> replace_prefix_md
+    |> replace_suffix_md
   end
 
   defp replace_prefix_md(w) do
