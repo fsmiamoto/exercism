@@ -17,20 +17,12 @@ defmodule ListOps do
 
   @spec map(list, (any -> any)) :: list
   def map(l, f) do
-    l |> reduce([], fn item, acc -> [f.(item) | acc] end) |> reverse
+    for item <- l, do: f.(item)
   end
 
   @spec filter(list, (any -> as_boolean(term))) :: list
   def filter(l, f) do
-    l |> reduce([], &filter_item(&1, &2, f)) |> reverse
-  end
-
-  defp filter_item(item, acc, f) do
-    if f.(item) do
-      [item | acc]
-    else
-      acc
-    end
+    for item <- l, f.(item), do: item
   end
 
   @type acc :: any
