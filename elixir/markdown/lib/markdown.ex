@@ -14,22 +14,21 @@ defmodule Markdown do
   def parse(md) do
     md
     |> String.split("\n")
-    |> Enum.map(&process(&1))
+    |> Enum.map(&parse_line(&1))
     |> Enum.join()
-    |> patch
+    |> wrap_list_items_with_ul_tag
   end
 
-  defp process("#" <> t) do
-    parse_header("#" <> t)
-    |> enclose_with_header_tag
+  defp parse_line(line = "#" <> _) do
+    line |> parse_header |> enclose_with_header_tag
   end
 
-  defp process("*" <> t) do
-    parse_list("*" <> t) |> enclose_with_li_tag
+  defp parse_line(line = "*" <> _) do
+    line |> parse_list_item |> enclose_with_li_tag
   end
 
-  defp process(t) do
-    t |> String.split() |> enclose_with_paragraph_tag
+  defp parse_line(line) do
+    line |> String.split() |> enclose_with_paragraph_tag
   end
 
   defp parse_header(hwt) do
@@ -37,7 +36,7 @@ defmodule Markdown do
     {to_string(String.length(h)), Enum.join(t, " ")}
   end
 
-  defp parse_list(l) do
+  defp parse_list_item(l) do
     l
     |> String.trim_leading("* ")
     |> String.split()
@@ -68,22 +67,18 @@ defmodule Markdown do
   end
 
   defp replace_prefix_md(w) do
-    cond do
-      w =~ ~r/^#{"__"}{1}/ -> String.replace(w, ~r/^#{"__"}{1}/, "<strong>", global: false)
-      w =~ ~r/^[#{"_"}{1}][^#{"_"}+]/ -> String.replace(w, ~r/_/, "<em>", global: false)
-      true -> w
-    end
+    w
+    |> String.replace_leading("__", "<strong>")
+    |> String.replace_leading("_", "<em>")
   end
 
   defp replace_suffix_md(w) do
-    cond do
-      w =~ ~r/#{"__"}{1}$/ -> String.replace(w, ~r/#{"__"}{1}$/, "</strong>")
-      w =~ ~r/[^#{"_"}{1}]/ -> String.replace(w, ~r/_/, "</em>")
-      true -> w
-    end
+    w
+    |> String.replace_trailing("__", "</strong>")
+    |> String.replace_trailing("_", "</em>")
   end
 
-  defp patch(l) do
+  defp wrap_list_items_with_ul_tag(l) do
     l
     |> String.replace("<li>", "<ul><li>", global: false)
     |> String.replace_suffix("</li>", "</li></ul>")
