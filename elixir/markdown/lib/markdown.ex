@@ -46,34 +46,34 @@ defmodule Markdown do
     "<li>#{join_words_with_tags(t)}</li>"
   end
 
-  defp enclose_with_header_tag({hl, htl}) do
-    "<h#{hl}>#{htl}</h#{hl}>"
+  defp enclose_with_header_tag({h_level, h_text}) do
+    "<h#{h_level}>#{h_text}</h#{h_level}>"
   end
 
   defp enclose_with_paragraph_tag(t) do
     "<p>#{join_words_with_tags(t)}</p>"
   end
 
-  defp join_words_with_tags(t) do
-    t
+  defp join_words_with_tags(words) do
+    words
     |> Enum.map(&replace_md_with_tag(&1))
     |> Enum.join(" ")
   end
 
-  defp replace_md_with_tag(w) do
-    w
+  defp replace_md_with_tag(word) do
+    word
     |> replace_prefix_md
     |> replace_suffix_md
   end
 
-  defp replace_prefix_md(w) do
-    w
+  defp replace_prefix_md(word) do
+    word
     |> String.replace_leading("__", "<strong>")
     |> String.replace_leading("_", "<em>")
   end
 
-  defp replace_suffix_md(w) do
-    w
+  defp replace_suffix_md(word) do
+    word
     |> String.replace_trailing("__", "</strong>")
     |> String.replace_trailing("_", "</em>")
   end
