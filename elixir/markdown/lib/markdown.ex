@@ -1,4 +1,14 @@
 defmodule Markdown do
+  """
+  My changes involved the following points: 
+  - Use the |> operator more, for being idiomatic and easier to read
+  - Avoid Regular Expressions, they're powerful but definitely harder to read and reason about
+  - Standardize functions for having a consistent set of steps for any line that will be parsed
+  - Improve naming
+
+  I think it could definitely still improve but would love to hear some feedback!
+  """
+
   @doc """
     Parses a given string with Markdown syntax and returns the associated HTML for that string.
 
@@ -61,9 +71,7 @@ defmodule Markdown do
   end
 
   defp replace_md_with_tag(word) do
-    word
-    |> replace_prefix_md
-    |> replace_suffix_md
+    word |> replace_prefix_md |> replace_suffix_md
   end
 
   defp replace_prefix_md(word) do
@@ -78,8 +86,8 @@ defmodule Markdown do
     |> String.replace_trailing("_", "</em>")
   end
 
-  defp wrap_list_items_with_ul_tag(l) do
-    l
+  defp wrap_list_items_with_ul_tag(li) do
+    li
     |> String.replace("<li>", "<ul><li>", global: false)
     |> String.replace_suffix("</li>", "</li></ul>")
   end
