@@ -19,24 +19,28 @@ defmodule Markdown do
     |> patch
   end
 
-  defp process(t) do
-    cond do
-      String.starts_with?(t, "#") -> enclose_with_header_tag(parse_header_md_level(t))
-      String.starts_with?(t, "*") -> parse_list_md_level(t)
-      true -> enclose_with_paragraph_tag(String.split(t))
-    end
+  defp process("#" <> t) do
+    parse_header("#" <> t)
+    |> enclose_with_header_tag
   end
 
-  defp parse_header_md_level(hwt) do
+  defp process("*" <> t) do
+    parse_list("*" <> t) |> enclose_with_li_tag
+  end
+
+  defp process(t) do
+    t |> String.split() |> enclose_with_paragraph_tag
+  end
+
+  defp parse_header(hwt) do
     [h | t] = String.split(hwt)
     {to_string(String.length(h)), Enum.join(t, " ")}
   end
 
-  defp parse_list_md_level(l) do
+  defp parse_list(l) do
     l
     |> String.trim_leading("* ")
     |> String.split()
-    |> enclose_with_li_tag
   end
 
   defp enclose_with_li_tag(t) do
