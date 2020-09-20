@@ -28,36 +28,36 @@ defmodule Markdown do
   end
 
   defp parse_line(line) do
-    line |> String.split() |> enclose_with_paragraph_tag
+    line |> parse_paragraph |> enclose_with_paragraph_tag
   end
 
-  defp parse_header(hwt) do
-    [h | t] = String.split(hwt)
-    {to_string(String.length(h)), Enum.join(t, " ")}
+  defp parse_header(h) do
+    [hashes | rest] = String.split(h)
+    {String.length(hashes), Enum.join(rest, " ")}
   end
 
-  defp parse_list_item(l) do
-    l
-    |> String.trim_leading("* ")
-    |> String.split()
+  defp parse_list_item(li) do
+    li |> String.trim_leading("* ") |> String.split()
   end
 
-  defp enclose_with_li_tag(t) do
-    "<li>#{join_words_with_tags(t)}</li>"
+  defp parse_paragraph(p) do
+    p |> String.split()
+  end
+
+  defp enclose_with_li_tag(words) do
+    "<li>#{join_words_with_tags(words)}</li>"
   end
 
   defp enclose_with_header_tag({h_level, h_text}) do
     "<h#{h_level}>#{h_text}</h#{h_level}>"
   end
 
-  defp enclose_with_paragraph_tag(t) do
-    "<p>#{join_words_with_tags(t)}</p>"
+  defp enclose_with_paragraph_tag(words) do
+    "<p>#{join_words_with_tags(words)}</p>"
   end
 
   defp join_words_with_tags(words) do
-    words
-    |> Enum.map(&replace_md_with_tag(&1))
-    |> Enum.join(" ")
+    words |> Enum.map(&replace_md_with_tag(&1)) |> Enum.join(" ")
   end
 
   defp replace_md_with_tag(word) do
