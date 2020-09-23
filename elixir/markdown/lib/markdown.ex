@@ -24,8 +24,7 @@ defmodule Markdown do
   def parse(md) do
     md
     |> String.split("\n")
-    |> Enum.map(&parse_line(&1))
-    |> Enum.join()
+    |> Enum.map_join(&parse_line(&1))
     |> wrap_list_items_with_ul_tag
   end
 
@@ -67,21 +66,13 @@ defmodule Markdown do
   end
 
   defp join_words_with_tags(words) do
-    words |> Enum.map(&replace_md_with_tag(&1)) |> Enum.join(" ")
+    words |> Enum.map_join(" ", &replace_md_with_tag(&1))
   end
 
   defp replace_md_with_tag(word) do
-    word |> replace_prefix_md |> replace_suffix_md
-  end
-
-  defp replace_prefix_md(word) do
     word
     |> String.replace_leading("__", "<strong>")
     |> String.replace_leading("_", "<em>")
-  end
-
-  defp replace_suffix_md(word) do
-    word
     |> String.replace_trailing("__", "</strong>")
     |> String.replace_trailing("_", "</em>")
   end
