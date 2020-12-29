@@ -1,55 +1,78 @@
 defmodule Zipper do
+  @type trail ::
+          :top
+          | {:left, BT.t(), trail}
+          | {:right, BT.t(), trail}
+
   @moduledoc """
   A zipper for a binary tree
 
   `tree` is the value of a node.
   """
-  @type t :: %Zipper{tree: BinTree}
-
-  defstruct [:tree]
+  @type t :: {BT.t(), trail}
 
   @doc """
   Get a zipper focused on the root node.
   """
   @spec from_tree(BinTree.t()) :: Zipper.t()
-  def from_tree(bin_tree) do
-    %Zipper{tree: bin_tree}
+  def from_tree(tree) do
+    {tree, :top}
   end
 
   @doc """
   Get the complete tree from a zipper.
   """
   @spec to_tree(Zipper.t()) :: BinTree.t()
+  def to_tree({tree, :top}) do
+    tree
+  end
+
   def to_tree(zipper) do
-    zipper.tree
+    zipper |> up() |> to_tree()
   end
 
   @doc """
   Get the value of the focus node.
   """
   @spec value(Zipper.t()) :: any
-  def value(zipper) do
+  def value({tree, _}) do
+    tree.value
   end
 
   @doc """
   Get the left child of the focus node, if any.
   """
   @spec left(Zipper.t()) :: Zipper.t() | nil
-  def left(zipper) do
+  def left({%{left: left}, _}) when is_nil(left) do
+    nil
+  end
+
+  def left({tree, trail}) do
+    {tree.left, {:left, tree, trail}}
   end
 
   @doc """
   Get the right child of the focus node, if any.
   """
   @spec right(Zipper.t()) :: Zipper.t() | nil
-  def right(zipper) do
+  def right({%{right: right}, _}) when is_nil(right) do
+    nil
+  end
+
+  def right({tree, trail}) do
+    {tree.right, {:right, tree, trail}}
   end
 
   @doc """
   Get the parent of the focus node, if any.
   """
   @spec up(Zipper.t()) :: Zipper.t() | nil
-  def up(zipper) do
+  def up({tree, :top}) do
+    nil
+  end
+
+  def up({_, {_, tree, trail}}) do
+    {tree, trail}
   end
 
   @doc """
