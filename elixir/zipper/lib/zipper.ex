@@ -81,43 +81,33 @@ defmodule Zipper do
   @spec set_value(Zipper.t(), any) :: Zipper.t()
   def set_value({tree, trail}, new_value) do
     tree = %{tree | value: new_value}
-    {tree, update_parents(trail, tree)}
+    {tree, update_parent_trees(trail, tree)}
   end
 
   @doc """
   Replace the left child tree of the focus node.
   """
   @spec set_left(Zipper.t(), BinTree.t() | nil) :: Zipper.t()
-  def set_left({tree, :top}, left) do
-    {%{tree | left: left}, :top}
-  end
-
   def set_left({tree, trail}, left) do
-    tree = %{tree | left: left}
-    {tree, update_parents(trail, tree)}
+    updated_tree = %{tree | left: left}
+    {updated_tree, update_parent_trees(trail, updated_tree)}
   end
 
   @doc """
   Replace the right child tree of the focus node.
   """
   @spec set_right(Zipper.t(), BinTree.t() | nil) :: Zipper.t()
-  def set_right({tree, :top}, right) do
-    {%{tree | right: right}, :top}
-  end
-
   def set_right({tree, trail}, right) do
-    tree = %{tree | right: right}
-    {tree, update_parents(trail, tree)}
+    updated_tree = %{tree | right: right}
+    {updated_tree, update_parent_trees(trail, updated_tree)}
   end
 
-  defp update_parents({direction, tree, :top}, new) do
-    updated = tree |> Map.put(direction, new)
-    {direction, updated, :top}
+  defp update_parent_trees(:top, _) do
+    :top
   end
 
-  defp update_parents({direction, tree, trail}, new) do
-    updated_tree = tree |> Map.put(direction, new)
-    updated_parent_trail = update_parents(trail, updated_tree)
-    {direction, updated_tree, updated_parent_trail}
+  defp update_parent_trees({direction, tree, trail}, subtree) do
+    updated_tree = tree |> Map.put(direction, subtree)
+    {direction, updated_tree, update_parent_trees(trail, updated_tree)}
   end
 end
