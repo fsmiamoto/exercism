@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
-if [[ "$1" = "" ]]; then
-  echo "One for you, one for me."
-  exit 0;
+result="One for "
+
+if (( $# )); then
+  result+="$1"
+else
+  result+="you"
 fi
 
-echo "One for $1, one for me."
+result+=", one for me."
+
+echo $result
+
