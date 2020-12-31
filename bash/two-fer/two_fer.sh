@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 
-result="One for "
+other="you"
 
 if (( $# )); then
-  result+="$1"
-else
-  result+="you"
+  other="$1"
 fi
 
-result+=", one for me."
-
-echo $result
+echo "One for $other, one for me."
 
