@@ -19,29 +19,20 @@ func Valid(s string) bool {
 		return false
 	}
 
-	// Reverse it so we start from the right
-	s = reverse(s)
-
-	// Sum everything, doubling every second digit
 	totalSum := 0
-	for i, d := range strings.Split(s, "") {
-		digit, _ := strconv.Atoi(d)
-		if i%2 == 1 {
-			digit = 2 * digit
-			if digit > 9 {
-				digit -= 9
+
+	// Sum everything, doubling every second digit starting from the right
+	digits := strings.Split(s, "")
+	for i := len(digits) - 1; i >= 0; i-- {
+		parsedDigit, _ := strconv.Atoi(digits[i])
+		if (len(digits)-i)%2 == 0 {
+			parsedDigit = 2 * parsedDigit
+			if parsedDigit > 9 {
+				parsedDigit -= 9
 			}
 		}
-		totalSum += digit
+		totalSum += parsedDigit
 	}
 
 	return totalSum%10 == 0
-}
-
-func reverse(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
 }
