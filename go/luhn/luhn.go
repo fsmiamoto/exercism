@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Valid reports if a string is valid using the Luhn algorithm
 func Valid(s string) bool {
 	// Remove whitespace
 	s = strings.ReplaceAll(s, " ", "")
@@ -18,34 +19,29 @@ func Valid(s string) bool {
 		return false
 	}
 
-	// Parse digits into a slice
-	parsedDigits := make([]int, len(s))
-	for _, digit := range strings.Split(s, "") {
-		d, _ := strconv.Atoi(digit)
-		parsedDigits = append(parsedDigits, d)
-	}
+	// Reverse it so we start from the right
+	s = reverse(s)
 
-	// Double every second digit, starting from the right
-	shouldDouble := false
-	for i := len(parsedDigits) - 1; i >= 0; i-- {
-		if !shouldDouble {
-			shouldDouble = true
-			continue
-		}
-
-		doubledDigit := 2 * parsedDigits[i]
-		if doubledDigit > 9 {
-			doubledDigit -= 9
-		}
-		parsedDigits[i] = doubledDigit
-		shouldDouble = false
-	}
-
-	// Sum everything up
+	// Sum everything, doubling every second digit
 	totalSum := 0
-	for i := range parsedDigits {
-		totalSum += parsedDigits[i]
+	for i, d := range strings.Split(s, "") {
+		digit, _ := strconv.Atoi(d)
+		if i%2 == 1 {
+			digit = 2 * digit
+			if digit > 9 {
+				digit -= 9
+			}
+		}
+		totalSum += digit
 	}
 
 	return totalSum%10 == 0
+}
+
+func reverse(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
 }
