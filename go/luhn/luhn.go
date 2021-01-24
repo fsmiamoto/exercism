@@ -14,24 +14,25 @@ func Valid(s string) bool {
 		return false
 	}
 
-	// Check if there's only digits
-	if _, err := strconv.Atoi(s); err != nil {
-		return false
-	}
-
-	totalSum := 0
+	digits := strings.Split(s, "")
 
 	// Sum everything, doubling every second digit starting from the right
-	digits := strings.Split(s, "")
+	totalSum, shouldDoubleDigit := 0, false
 	for i := len(digits) - 1; i >= 0; i-- {
-		parsedDigit, _ := strconv.Atoi(digits[i])
-		if (len(digits)-i)%2 == 0 {
+		parsedDigit, err := strconv.Atoi(digits[i])
+		if err != nil {
+			return false
+		}
+
+		if shouldDoubleDigit {
 			parsedDigit = 2 * parsedDigit
 			if parsedDigit > 9 {
 				parsedDigit -= 9
 			}
 		}
+
 		totalSum += parsedDigit
+		shouldDoubleDigit = !shouldDoubleDigit
 	}
 
 	return totalSum%10 == 0
