@@ -18,23 +18,23 @@ func Valid(s string) bool {
 
 	// Sum everything, doubling every second digit starting from the right
 	totalSum := 0
-	shouldDoubleDigit := len(digits)%2 == 0
+	double := len(digits)%2 == 0
 
-	for i := range digits {
-		parsedDigit, err := strconv.Atoi(digits[i])
+	for _, d := range digits {
+		digit, err := strconv.Atoi(d)
 		if err != nil {
 			return false
 		}
 
-		if shouldDoubleDigit {
-			parsedDigit = 2 * parsedDigit
-			if parsedDigit > 9 {
-				parsedDigit -= 9
+		if double {
+			digit *= 2
+			if digit > 9 {
+				digit -= 9
 			}
 		}
 
-		totalSum += parsedDigit
-		shouldDoubleDigit = !shouldDoubleDigit
+		totalSum += digit
+		double = !double
 	}
 
 	return totalSum%10 == 0
