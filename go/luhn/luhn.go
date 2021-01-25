@@ -17,8 +17,10 @@ func Valid(s string) bool {
 	digits := strings.Split(s, "")
 
 	// Sum everything, doubling every second digit starting from the right
-	totalSum, shouldDoubleDigit := 0, false
-	for i := len(digits) - 1; i >= 0; i-- {
+	totalSum := 0
+	shouldDoubleDigit := len(digits)%2 == 0
+
+	for i := range digits {
 		parsedDigit, err := strconv.Atoi(digits[i])
 		if err != nil {
 			return false
