@@ -14,14 +14,12 @@ func Valid(s string) bool {
 		return false
 	}
 
-	digits := strings.Split(s, "")
-
 	// Sum everything, doubling every second digit starting from the right
 	totalSum := 0
-	double := len(digits)%2 == 0
+	double := len(s)%2 == 0
 
-	for _, d := range digits {
-		digit, err := strconv.Atoi(d)
+	for _, d := range s {
+		digit, err := strconv.Atoi(string(d))
 		if err != nil {
 			return false
 		}
