@@ -18,4 +18,4 @@ if is_divisible_by 7 $1; then
   result+="Plong"
 fi
 
-echo ${result:-$1}
+echo "${result:-$1}"
