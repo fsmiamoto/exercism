@@ -1,2 +1,4 @@
 **/metadata.json
 haskell/**/.stack-work
+**/node_modules
+reasonml/**/lib
