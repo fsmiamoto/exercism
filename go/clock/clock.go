@@ -23,10 +23,10 @@ func (c Clock) String() string {
 
 // Subtract subtracts an ammount of minutes from the Clock, returning a new Clock
 func (c Clock) Subtract(minutes int) Clock {
-	return New(c.minutes/60, (c.minutes%60)-minutes)
+	return New(0, c.minutes-minutes)
 }
 
 // Add adds an ammount of minutes from the Clock, returning a new Clock
 func (c Clock) Add(minutes int) Clock {
-	return New(c.minutes/60, (c.minutes%60)+minutes)
+	return New(0, c.minutes+minutes)
 }
