@@ -1,24 +1,18 @@
 const BASE_HOURLY_RATE: u64  = 221;
 
 pub fn production_rate_per_hour(speed: u8) -> f64 {
-    let rate = success_rate_for_speed(speed);
-    return (speed as u64 * BASE_HOURLY_RATE) as f64 * rate;
+    let raw_rate = BASE_HOURLY_RATE * speed as u64;
+
+    let success_rate = match speed {
+        0..=4 => 1.0,
+        5..=8 => 0.9,
+        9..=10 => 0.77,
+        _ => panic!("Invalid speed"),
+    };
+
+    return success_rate * raw_rate as f64;
 }
 
 pub fn working_items_per_minute(speed: u8) -> u32 {
-    let per_minute = production_rate_per_hour(speed) / 60 as f64;
-    per_minute.floor() as u32
-}
-
-fn success_rate_for_speed(speed: u8) -> f64 {
-    if speed >= 1 && speed <= 4 {
-        return 1.0
-    }
-    if speed >= 5 && speed <= 8 {
-        return 0.9
-    }
-    if speed >= 9 && speed <= 10 {
-        return 0.77
-    }
-    return 0.0
+    production_rate_per_hour(speed) as u32 / 60
 }
