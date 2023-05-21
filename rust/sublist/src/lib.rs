@@ -6,44 +6,34 @@ pub enum Comparison {
     Unequal,
 }
 
-pub fn sublist<T: PartialEq>(first_list: &[T], second_list: &[T]) -> Comparison {
-    if first_list.len() == second_list.len() {
-        // Same size, check if they're equal
-        return if equal(first_list, second_list) {
-            Comparison::Equal
-        } else {
-            Comparison::Unequal
-        };
+pub fn sublist<T: PartialEq>(first: &[T], second: &[T]) -> Comparison {
+    use Comparison::*;
+    match (first.len(), second.len()) {
+        (m, n) if m == n => {
+            if contained_in(first, second) {
+                Equal
+            } else {
+                Unequal
+            }
+        }
+        (m, n) if m < n => {
+            if contained_in(first, second) {
+                Sublist
+            } else {
+                Unequal
+            }
+        }
+        (m, n) if m > n => {
+            if contained_in(second, first) {
+                Superlist
+            } else {
+                Unequal
+            }
+        }
+        (_, _) => Unequal,
     }
-    // Sizes are different
-    if first_list.len() < second_list.len() {
-        return if is_sublist(first_list, second_list) {
-            Comparison::Sublist
-        } else {
-            Comparison::Unequal
-        };
-    }
-    return if is_sublist(second_list, first_list) {
-        Comparison::Superlist
-    } else {
-        Comparison::Unequal
-    };
 }
 
-fn is_sublist<T: PartialEq>(first: &[T], second: &[T]) -> bool {
-    return second.iter().enumerate().any(|(i, _)| {
-        let end = if (i + first.len()) < second.len() {
-            i + first.len()
-        } else {
-            second.len()
-        };
-        return equal(first, &second[i..end]);
-    });
-}
-
-fn equal<T: PartialEq>(first: &[T], second: &[T]) -> bool {
-    if first.len() != second.len() {
-        return false;
-    }
-    return first.iter().zip(second).all(|(x, y)| x == y);
+fn contained_in<T: PartialEq>(first: &[T], second: &[T]) -> bool {
+    first.is_empty() || second.windows(first.len()).any(|w| w == first)
 }
